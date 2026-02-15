@@ -1,0 +1,8 @@
+{
+    "name": "nikopos-root",
+    "private": true,
+    "workspaces": [
+        "backend",
+        "frontend"
+    ]
+}
