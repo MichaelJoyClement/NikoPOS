@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+    const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    if (!url.startsWith('http')) {
+        return `https://${url}`;
+    }
+    return url;
+};
+
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+    baseURL: getBaseURL(),
 });
 
 api.interceptors.request.use((config) => {

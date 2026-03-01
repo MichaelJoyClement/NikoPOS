@@ -149,7 +149,7 @@ export default function Home() {
         {/* Low Stock Items */}
         <Card className="col-span-3 border-orange-200 bg-orange-50/30">
           <CardHeader>
-            <CardTitle>Stok Menipis (≤ 5)</CardTitle>
+            <CardTitle>Stok Menipis (≤ 2)</CardTitle>
             <CardDescription>Perlu restock segera</CardDescription>
           </CardHeader>
           <CardContent>

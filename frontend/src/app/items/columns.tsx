@@ -22,6 +22,7 @@ export type Item = {
     merek: string | null;
     hargaPokok: number;
     hargaJual: number;
+    hargaGrosir: number;
     mataUang: string;
 };
 
@@ -89,6 +90,17 @@ export function getColumns(
             },
         },
         {
+            accessorKey: 'hargaGrosir',
+            header: 'Harga Toko',
+            cell: ({ row }) => {
+                const amount = parseFloat(row.getValue('hargaGrosir'));
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                }).format(amount);
+            },
+        },
+        {
             accessorKey: 'mataUang',
             header: 'Mata Uang',
         },
@@ -134,7 +146,7 @@ export function getColumns(
     ];
 
     if (role === 'ADMIN') {
-        return cols.filter(col => (col as any).accessorKey !== 'hargaPokok');
+        return cols.filter(col => !['hargaPokok', 'hargaGrosir'].includes((col as any).accessorKey));
     }
 
     return cols;

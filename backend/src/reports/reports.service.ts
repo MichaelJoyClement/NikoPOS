@@ -43,11 +43,11 @@ export class ReportsService {
             this.prisma.item.count({
                 where: { businessId },
             }),
-            // Low stock items (stock <= 5)
+            // Low stock items (stock <= 2)
             this.prisma.item.count({
                 where: {
                     businessId,
-                    stock: { lte: 5 },
+                    stock: { lte: 2 },
                 },
             }),
             // Recent 5 sales
@@ -63,7 +63,7 @@ export class ReportsService {
             this.prisma.item.findMany({
                 where: {
                     businessId,
-                    stock: { lte: 5 },
+                    stock: { lte: 2 },
                 },
                 orderBy: { stock: 'asc' },
                 take: 5,

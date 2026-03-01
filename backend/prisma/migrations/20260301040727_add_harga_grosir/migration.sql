@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Item" ADD COLUMN     "hargaGrosir" DECIMAL(65,30) NOT NULL DEFAULT 0;

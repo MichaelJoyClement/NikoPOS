@@ -38,6 +38,7 @@ const formSchema = z.object({
     merek: z.string().optional(),
     hargaPokok: z.coerce.number().min(0),
     hargaJual: z.coerce.number().min(0),
+    hargaGrosir: z.coerce.number().min(0),
     mataUang: z.string().default('IDR'),
 });
 
@@ -60,6 +61,7 @@ export function AddItemDialog({ onSuccess }: { onSuccess: () => void }) {
             merek: '',
             hargaPokok: 0,
             hargaJual: 0,
+            hargaGrosir: 0,
             mataUang: 'IDR',
         },
     });
@@ -183,7 +185,7 @@ export function AddItemDialog({ onSuccess }: { onSuccess: () => void }) {
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             <FormField
                                 control={form.control}
                                 name="hargaPokok"
@@ -202,7 +204,20 @@ export function AddItemDialog({ onSuccess }: { onSuccess: () => void }) {
                                 name="hargaJual"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Harga Jual</FormLabel>
+                                        <FormLabel>Harga Jual (Retail)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="hargaGrosir"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Harga Toko</FormLabel>
                                         <FormControl>
                                             <Input type="number" {...field} />
                                         </FormControl>

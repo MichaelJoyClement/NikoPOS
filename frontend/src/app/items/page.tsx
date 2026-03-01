@@ -51,6 +51,7 @@ export default function ItemsPage() {
     const [restockQty, setRestockQty] = useState<number>(0);
     const [restockPrice, setRestockPrice] = useState<number>(0);
     const [newSellingPrice, setNewSellingPrice] = useState<number>(0);
+    const [newGrosirPrice, setNewGrosirPrice] = useState<number>(0);
 
     useEffect(() => {
         if (businessId) {
@@ -65,6 +66,7 @@ export default function ItemsPage() {
             const mappedData = res.data.map((item: any) => ({
                 ...item,
                 hargaJual: Number(item.hargaJual),
+                hargaGrosir: Number(item.hargaGrosir),
                 stock: Number(item.stock),
             }));
             setData(mappedData);
@@ -88,6 +90,7 @@ export default function ItemsPage() {
             merek: item.merek,
             hargaPokok: item.hargaPokok,
             hargaJual: item.hargaJual,
+            hargaGrosir: item.hargaGrosir,
         });
         setEditOpen(true);
     };
@@ -131,6 +134,7 @@ export default function ItemsPage() {
         setRestockQty(0);
         setRestockPrice(item.hargaPokok);
         setNewSellingPrice(item.hargaJual);
+        setNewGrosirPrice(item.hargaGrosir);
         setRestockOpen(true);
     };
 
@@ -141,6 +145,7 @@ export default function ItemsPage() {
                 qty: restockQty,
                 hargaBeli: restockPrice,
                 hargaJual: newSellingPrice,
+                hargaGrosir: newGrosirPrice,
             });
             toast.success(`Berhasil menambah stok, update HPP, dan harga jual`);
             setRestockOpen(false);
@@ -235,13 +240,21 @@ export default function ItemsPage() {
                                 </div>
                             )}
                             <div className="space-y-2">
-                                <Label>Harga Jual</Label>
+                                <Label>Harga Jual (Retail)</Label>
                                 <Input
                                     type="number"
                                     value={editForm.hargaJual ?? 0}
                                     onChange={(e) => setEditForm({ ...editForm, hargaJual: Number(e.target.value) })}
                                 />
                             </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Harga Toko (untuk toko lain)</Label>
+                            <Input
+                                type="number"
+                                value={editForm.hargaGrosir ?? 0}
+                                onChange={(e) => setEditForm({ ...editForm, hargaGrosir: Number(e.target.value) })}
+                            />
                         </div>
                     </div>
                     <DialogFooter>
@@ -289,14 +302,22 @@ export default function ItemsPage() {
                             </div>
                         )}
                         <div className="space-y-2">
-                            <Label>Harga Jual Baru</Label>
+                            <Label>Harga Jual Baru (Retail)</Label>
                             <Input
                                 type="number"
                                 value={newSellingPrice}
                                 onChange={(e) => setNewSellingPrice(Number(e.target.value))}
                             />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Harga Toko Baru (untuk toko lain)</Label>
+                            <Input
+                                type="number"
+                                value={newGrosirPrice}
+                                onChange={(e) => setNewGrosirPrice(Number(e.target.value))}
+                            />
                             <p className="text-xs text-muted-foreground">
-                                *Sesuaikan harga jual jika HPP mengalami kenaikan.
+                                *Sesuaikan harga jika HPP mengalami kenaikan.
                             </p>
                         </div>
                     </div>

@@ -47,8 +47,8 @@ export class ItemsController {
     @Post(':id/restock')
     restock(
         @Param('id') id: string,
-        @Body() data: { qty: number; hargaBeli: number; hargaJual?: number },
+        @Body() data: { qty: number; hargaBeli: number; hargaJual?: number; hargaGrosir?: number },
     ) {
-        return this.itemsService.restock(id, data.qty, data.hargaBeli, data.hargaJual);
+        return this.itemsService.restock(id, data.qty, data.hargaBeli, data.hargaJual, data.hargaGrosir);
     }
 }

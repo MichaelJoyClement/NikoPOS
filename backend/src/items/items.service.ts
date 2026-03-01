@@ -50,7 +50,7 @@ export class ItemsService {
         return this.prisma.item.delete({ where: { id } });
     }
 
-    async restock(id: string, qty: number, hargaBeli: number, hargaJual?: number) {
+    async restock(id: string, qty: number, hargaBeli: number, hargaJual?: number, hargaGrosir?: number) {
         const item = await this.prisma.item.findUnique({ where: { id } });
         if (!item) throw new BadRequestException('Item not found');
 
@@ -68,7 +68,8 @@ export class ItemsService {
             data: {
                 stock: newStock,
                 hargaPokok: newHPP,
-                hargaJual: hargaJual ?? item.hargaJual, // Update sending price if provided
+                hargaJual: hargaJual ?? item.hargaJual, // Update selling price if provided
+                hargaGrosir: hargaGrosir ?? item.hargaGrosir, // Update wholesale price if provided
             },
         });
     }

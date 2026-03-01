@@ -46,6 +46,7 @@ model Item {
   merek       String?
   hargaPokok  Decimal  @default(0)
   hargaJual   Decimal  @default(0)
+  hargaGrosir Decimal  @default(0)
   mataUang    String   @default("IDR")
   garansi     String?  // pengganti expired date
   createdAt   DateTime @default(now())

@@ -20,7 +20,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Search, X, Trash2, ShoppingCart } from 'lucide-react';
+import { Search, X, Trash2, ShoppingCart, Tag, Store } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Types
@@ -29,7 +29,9 @@ interface Product {
     kodeItem: string;
     namaItem: string;
     hargaJual: number;
+    hargaGrosir: number;
     stock: number;
+    merek: string | null;
 }
 
 interface CartItem extends Product {
@@ -47,6 +49,7 @@ export default function SalesPage() {
     const [vehicleModel, setVehicleModel] = useState('');
     const [plateNumber, setPlateNumber] = useState('');
     const [loading, setLoading] = useState(false);
+    const [priceMode, setPriceMode] = useState<'retail' | 'grosir'>('retail');
 
     const activeBusiness = businesses.find(b => b.id === businessId);
     const isMozaVariasi = activeBusiness?.name === 'Moza Variasi';
@@ -65,6 +68,7 @@ export default function SalesPage() {
             const data = res.data.map((p: any) => ({
                 ...p,
                 hargaJual: Number(p.hargaJual),
+                hargaGrosir: Number(p.hargaGrosir),
                 stock: Number(p.stock)
             }));
             setProducts(data);
@@ -83,6 +87,7 @@ export default function SalesPage() {
             toast.error('Stok habis!');
             return;
         }
+        const activePrice = priceMode === 'grosir' ? product.hargaGrosir : product.hargaJual;
         setCart(prev => {
             const existing = prev.find(item => item.id === product.id);
             if (existing) {
@@ -96,7 +101,7 @@ export default function SalesPage() {
                         : item
                 );
             }
-            return [...prev, { ...product, qty: 1, subtotal: Number(product.hargaJual) }];
+            return [...prev, { ...product, hargaJual: activePrice, qty: 1, subtotal: activePrice }];
         });
     };
 
@@ -158,16 +163,40 @@ export default function SalesPage() {
         <div className="flex h-[calc(100vh-8rem)] gap-4">
             {/* Left Panel: Product List */}
             <div className="w-2/3 flex flex-col gap-4">
-                <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Cari barang (Nama / Kode / Barcode)..."
-                        className="pl-8"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    // Auto-focus logic for barcode scanner could be added here
-                    />
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            type="search"
+                            placeholder="Cari barang (Nama / Kode / Barcode)..."
+                            className="pl-8"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    {/* Price Mode Toggle */}
+                    <div className="flex rounded-md border overflow-hidden">
+                        <button
+                            className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${priceMode === 'retail'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-background text-muted-foreground hover:bg-muted'
+                                }`}
+                            onClick={() => { setPriceMode('retail'); setCart([]); }}
+                        >
+                            <Tag className="h-3.5 w-3.5" />
+                            Retail
+                        </button>
+                        <button
+                            className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${priceMode === 'grosir'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-background text-muted-foreground hover:bg-muted'
+                                }`}
+                            onClick={() => { setPriceMode('grosir'); setCart([]); }}
+                        >
+                            <Store className="h-3.5 w-3.5" />
+                            Toko
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pr-2 pb-2">
@@ -184,11 +213,18 @@ export default function SalesPage() {
                                 <CardTitle className="text-sm font-medium leading-tight">
                                     {product.namaItem}
                                 </CardTitle>
-                                <p className="text-xs text-muted-foreground">{product.kodeItem}</p>
+                                <div className="flex justify-between items-center">
+                                    <p className="text-xs text-muted-foreground">{product.kodeItem}</p>
+                                    {product.merek && (
+                                        <p className="text-xs font-semibold text-primary/80">{product.merek}</p>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardContent className="p-4 pt-0">
                                 <div className="font-bold text-lg mt-2">
-                                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.hargaJual)}
+                                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
+                                        priceMode === 'grosir' ? product.hargaGrosir : product.hargaJual
+                                    )}
                                 </div>
                                 <div className={`text-xs mt-1 font-bold ${product.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>
                                     Stok: {product.stock}
