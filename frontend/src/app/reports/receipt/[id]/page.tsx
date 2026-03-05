@@ -18,6 +18,7 @@ interface ReceiptData {
         price: number;
         total: number;
         guarantee: string | null;
+        discountIDR?: number;
     }[];
     total: number;
 }
@@ -214,6 +215,11 @@ export default function ReceiptPage() {
                                                 (Garansi: {item.guarantee})
                                             </span>
                                         )}
+                                        {item.discountIDR ? (
+                                            <div style={{ fontSize: '10px', color: '#555', marginTop: '2px' }}>
+                                                Diskon: -Rp {fmt(item.discountIDR)}
+                                            </div>
+                                        ) : null}
                                     </td>
                                     <td className="num">Rp {fmt(item.price)}</td>
                                     <td className="num">Rp {fmt(item.total)}</td>

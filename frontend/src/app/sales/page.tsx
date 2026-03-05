@@ -36,6 +36,7 @@ interface Product {
 
 interface CartItem extends Product {
     qty: number;
+    potonganIDR: number;
     subtotal: number;
 }
 
@@ -95,13 +96,14 @@ export default function SalesPage() {
                     toast.error('Jumlah melebihi stok yang tersedia');
                     return prev;
                 }
+                const newQty = existing.qty + 1;
                 return prev.map(item =>
                     item.id === product.id
-                        ? { ...item, qty: item.qty + 1, subtotal: (item.qty + 1) * Number(item.hargaJual) }
+                        ? { ...item, qty: newQty, subtotal: (newQty * Number(item.hargaJual)) - item.potonganIDR }
                         : item
                 );
             }
-            return [...prev, { ...product, hargaJual: activePrice, qty: 1, subtotal: activePrice }];
+            return [...prev, { ...product, hargaJual: activePrice, qty: 1, potonganIDR: 0, subtotal: activePrice }];
         });
     };
 
@@ -118,9 +120,23 @@ export default function SalesPage() {
         }
         setCart(prev => prev.map(item =>
             item.id === productId
-                ? { ...item, qty, subtotal: qty * Number(item.hargaJual) }
+                ? { ...item, qty, subtotal: (qty * Number(item.hargaJual)) - item.potonganIDR }
                 : item
         ));
+    };
+
+    const updateDiscount = (productId: string, discountStr: string) => {
+        const numericStr = discountStr.replace(/\D/g, '');
+        const discount = numericStr ? parseInt(numericStr, 10) : 0;
+
+        setCart(prev => prev.map(item => {
+            if (item.id === productId) {
+                const maxDiscount = item.qty * Number(item.hargaJual);
+                const finalDiscount = discount > maxDiscount ? maxDiscount : discount;
+                return { ...item, potonganIDR: finalDiscount, subtotal: (item.qty * Number(item.hargaJual)) - finalDiscount };
+            }
+            return item;
+        }));
     };
 
     const grandTotal = cart.reduce((acc, item) => acc + item.subtotal, 0);
@@ -137,7 +153,7 @@ export default function SalesPage() {
                     jumlah: item.qty,
                     satuan: 'PCS', // Default for now
                     harga: item.hargaJual,
-                    potongan: 0,
+                    potonganIDR: item.potonganIDR,
                 })),
                 pelanggan: isMozaVariasi
                     ? `${vehicleModel}${plateNumber ? ` [${plateNumber}]` : ''}`
@@ -271,10 +287,11 @@ export default function SalesPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[50%]">Item</TableHead>
-                                <TableHead className="w-[20%]">Qty</TableHead>
+                                <TableHead className="w-[40%]">Item</TableHead>
+                                <TableHead className="w-[15%]">Qty</TableHead>
+                                <TableHead className="w-[20%] text-right">Diskon (Rp)</TableHead>
                                 <TableHead className="text-right">Total</TableHead>
-                                <TableHead className="w-[10%]"></TableHead>
+                                <TableHead className="w-[5%]"></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -293,6 +310,15 @@ export default function SalesPage() {
                                             className="h-8 w-16 px-1"
                                             value={item.qty}
                                             onChange={(e) => updateQty(item.id, parseInt(e.target.value) || 1)}
+                                        />
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Input
+                                            type="text"
+                                            className="h-8 w-24 px-1 text-right ml-auto"
+                                            value={item.potonganIDR === 0 ? '' : new Intl.NumberFormat('id-ID').format(item.potonganIDR)}
+                                            onChange={(e) => updateDiscount(item.id, e.target.value)}
+                                            placeholder="0"
                                         />
                                     </TableCell>
                                     <TableCell className="text-right font-bold">

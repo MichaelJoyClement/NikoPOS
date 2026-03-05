@@ -134,6 +134,7 @@ export class ReportsService {
                 price: i.harga,
                 total: i.total,
                 guarantee: i.item.garansi,
+                discountIDR: i.potonganIDR,
             })),
             total: sale.grandTotal,
         };

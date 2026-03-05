@@ -15,7 +15,7 @@ export class SalesService {
             harga: number;
             satuan: string;
             potPersen?: number;
-            potongan?: number;
+            potonganIDR?: number;
             keterangan?: string;
         }[];
         keterangan?: string;
@@ -24,7 +24,7 @@ export class SalesService {
         const noTransaksi = data.noTransaksi || `TRX-${new Date().toISOString().replace(/[-:T]/g, '').slice(0, 15)}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
         let subTotal = 0;
         const saleItems = data.items.map((item) => {
-            const total = item.harga * item.jumlah * (1 - (item.potPersen || 0) / 100);
+            const total = (item.harga * item.jumlah * (1 - (item.potPersen || 0) / 100)) - (item.potonganIDR || 0);
             subTotal += total;
             return {
                 itemId: item.itemId,
@@ -32,6 +32,7 @@ export class SalesService {
                 harga: item.harga,
                 satuan: item.satuan,
                 potPersen: item.potPersen || 0,
+                potonganIDR: item.potonganIDR || 0,
                 total,
                 keterangan: item.keterangan,
             };

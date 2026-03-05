@@ -86,5 +86,6 @@ model SaleItem {
   satuan      String
   harga       Decimal
   potPersen   Decimal @default(0)
+  potonganIDR Decimal @default(0)
   total       Decimal
 }
